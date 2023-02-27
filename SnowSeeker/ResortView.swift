@@ -7,6 +7,30 @@
 
 import SwiftUI
 
+/// Challenge 1:
+struct Watermark: ViewModifier {
+    var text: String
+    
+    func body(content: Content) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            content
+            Text(text)
+                .font(.caption)
+                .foregroundColor(.black)
+                .padding(2)
+                .background(.white)
+                .opacity(0.6)
+        }
+    }
+}
+
+/// Challenge 1:
+extension View {
+    func watermarked(with text: String) -> some View {
+        modifier(Watermark(text: text))
+    }
+}
+
 struct ResortView: View {
     
     @Environment(\.horizontalSizeClass) var sizeClass
@@ -25,6 +49,8 @@ struct ResortView: View {
                 Image(decorative: resort.id)
                     .resizable()
                     .scaledToFill()
+                /// Challenge 1:
+                    .watermarked(with: "Photo: \(resort.imageCredit)")
                 
                 HStack {
                     if sizeClass == .compact && typeSize > .large {
