@@ -17,7 +17,7 @@ struct Watermark: ViewModifier {
             Text(text)
                 .font(.caption)
                 .foregroundColor(.black)
-                .padding(2)
+                .padding(1)
                 .background(.white)
                 .opacity(0.6)
         }
