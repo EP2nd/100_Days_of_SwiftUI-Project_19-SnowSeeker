@@ -21,7 +21,7 @@ import SwiftUI
 
 /// Challenge 3:
 enum SortOrder {
-    case none, alphabetical, byCountry
+    case `default`, alphabetical, byCountry
 }
 
 struct ContentView: View {
@@ -34,37 +34,60 @@ struct ContentView: View {
     
     /// Challenge 3:
     @State private var isShowingSortingOptions = false
-    @State private var sortOrder = SortOrder.none
+    @State private var sortOrder = SortOrder.default
     
+    /// Previous solution:
     /// Challenge 3:
-    var filteredResorts: [Resort] {
-        
-        switch sortOrder {
+        /* var filteredResorts: [Resort] {
             
-        case .none:
+            switch sortOrder {
+                
+            case .none:
+                if searchText.isEmpty {
+                    return resorts
+                } else {
+                    return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+                }
+            case .alphabetical:
+                if searchText.isEmpty {
+                    return resorts.sorted()
+                } else {
+                    return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+                }
+            case .byCountry:
+                if searchText.isEmpty {
+                    return resorts.sorted { $0.country < $1.country }
+                } else {
+                    return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+                }
+            }
+        } */
+    
+    var filteredResorts: [Resort] {
             if searchText.isEmpty {
                 return resorts
             } else {
                 return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
             }
+        }
+    
+    /// Challenge 3:
+    var sortedResorts: [Resort] {
+        
+        switch sortOrder {
+            
+        case .`default`:
+            return filteredResorts
         case .alphabetical:
-            if searchText.isEmpty {
-                return resorts.sorted()
-            } else {
-                return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
-            }
+            return filteredResorts.sorted { $0.name < $1.name }
         case .byCountry:
-            if searchText.isEmpty {
-                return resorts.sorted { $0.country < $1.country }
-            } else {
-                return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
-            }
+            return filteredResorts.sorted { $0.country < $1.country }
         }
     }
     
     var body: some View {
         NavigationView {
-            List(filteredResorts) { resort in
+            List(sortedResorts) { resort in
                 NavigationLink {
                     ResortView(resort: resort)
                 } label: {
@@ -84,7 +107,7 @@ struct ContentView: View {
             }
             /// Challenge 3:
             .confirmationDialog("Sorting order", isPresented: $isShowingSortingOptions) {
-                Button("Default") { sortOrder = .none }
+                Button("Default") { sortOrder = .default }
                 Button("Alphabetical") { sortOrder = .alphabetical }
                 Button("By country") { sortOrder = .byCountry }
                 Button("Cancel", role: .cancel) { }
