@@ -17,14 +17,14 @@ class Favorites: ObservableObject {
     
     init() {
         /// Challenge 2:
-        /// Load our saved data.
+        /// Load our saved data:
         if let data = UserDefaults.standard.data(forKey: saveKey) {
             if let decoded = try? JSONDecoder().decode(Set<String>.self, from: data) {
                 resorts = decoded
                 return
             }
         }
-        /// Still here? Use an empty array.
+        /// Still here? Use an empty array:
         resorts = []
     }
     

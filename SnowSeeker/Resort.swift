@@ -7,7 +7,9 @@
 
 import Foundation
 
-struct Resort: Codable, Identifiable {
+/// Challenge 3:
+struct Resort: Codable, Identifiable, Comparable {
+    
     let id: String
     let name: String
     let country: String
@@ -24,6 +26,12 @@ struct Resort: Codable, Identifiable {
         facilities.map(Facility.init)
     }
     
+    /// Challenge 3:
+    static func <(lhs: Resort, rhs: Resort) -> Bool {
+            return lhs.name < rhs.name
+    }
+    
+    /// Alternative approach:
 //    static let allResorts: [Resort] = Bundle.main.decode("resorts.json")
 //    static let example = allResorts[0]
     

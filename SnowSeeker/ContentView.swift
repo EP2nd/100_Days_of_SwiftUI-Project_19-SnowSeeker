@@ -7,7 +7,9 @@
 
 import SwiftUI
 
-extension View {
+/// An implementation of an extension that allows limiting the default landscape layout split while being run on an iPhone:
+
+/* extension View {
     @ViewBuilder func phoneOnlyStackNavigationView() -> some View {
         if UIDevice.current.userInterfaceIdiom == .phone {
             self.navigationViewStyle(.stack)
@@ -15,69 +17,89 @@ extension View {
             self
         }
     }
+} */
+
+/// Challenge 3:
+enum SortOrder {
+    case none, alphabetical, byCountry
 }
 
 struct ContentView: View {
     
     let resorts: [Resort] = Bundle.main.decode("resorts.json")
     
+    @StateObject var favorites = Favorites()
+    
     @State private var searchText = ""
     
+    /// Challenge 3:
+    @State private var isShowingSortingOptions = false
+    @State private var sortOrder = SortOrder.none
+    
+    /// Challenge 3:
     var filteredResorts: [Resort] {
-        if searchText.isEmpty {
-            return resorts
-        } else {
-            return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+        
+        switch sortOrder {
+            
+        case .none:
+            if searchText.isEmpty {
+                return resorts
+            } else {
+                return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            }
+        case .alphabetical:
+            if searchText.isEmpty {
+                return resorts.sorted()
+            } else {
+                return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            }
+        case .byCountry:
+            if searchText.isEmpty {
+                return resorts.sorted { $0.country < $1.country }
+            } else {
+                return resorts.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
+            }
         }
     }
     
-    @StateObject var favorites = Favorites()
-    
     var body: some View {
-        
         NavigationView {
             List(filteredResorts) { resort in
                 NavigationLink {
                     ResortView(resort: resort)
                 } label: {
-                    HStack {
-                        Image(resort.country)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 40, height: 25)
-                            .clipShape(
-                                RoundedRectangle(cornerRadius: 5)
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 5)
-                                    .stroke(.black, lineWidth: 1)
-                            )
-                        
-                        VStack(alignment: .leading) {
-                            Text(resort.name)
-                                .font(.headline)
-                            
-                            Text("\(resort.runs) runs")
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        if favorites.contains(resort) {
-                            Spacer()
-                            
-                            Image(systemName: "heart.fill")
-                                .accessibilityLabel("This is a favorite resort")
-                                .foregroundColor(.red)
-                        }
-                    }
+                    /// Challenge 3:
+                    ResortsView(resorts: resorts, resort: resort)
                 }
             }
             .navigationTitle("Resorts")
             .searchable(text: $searchText, prompt: "Search for a resort")
+            /// Challenge 3:
+            .toolbar {
+                Button {
+                    isShowingSortingOptions = true
+                } label: {
+                    Label("Sort", systemImage: "arrow.up.arrow.down")
+                }
+            }
+            /// Challenge 3:
+            .confirmationDialog("Sorting order", isPresented: $isShowingSortingOptions) {
+                Button("Default") { sortOrder = .none }
+                Button("Alphabetical") { sortOrder = .alphabetical }
+                Button("By country") { sortOrder = .byCountry }
+                Button("Cancel", role: .cancel) { }
+            } message: {
+                Text("Choose sorting type:")
+            }
             
             WelcomeView()
         }
+        /// Default setting:
 //        .navigationViewStyle(.automatic)
+        
+        /// The aforementioned extension function:
 //        .phoneOnlyStackNavigationView()
+        
         .environmentObject(favorites)
     }
 }

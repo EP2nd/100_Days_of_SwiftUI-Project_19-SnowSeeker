@@ -33,12 +33,14 @@ struct ResortDetailsView: View {
             VStack {
                 Text("Size")
                     .font(.caption.bold())
+                
                 Text(size)
             }
             
             VStack {
                 Text("Price")
                     .font(.caption.bold())
+                
                 Text(price)
                     .font(.title3)
             }
